@@ -40,4 +40,21 @@ router.post('/', (req, res) => {
   res.status(201).json(novoExemplar);
 });
 
+router.put('/:id', (req, res) => {
+  const exemplar = exemplares.find((e) => e.id === parseInt(req.params.id));
+  if (!exemplar) {
+    return res.status(404).json({ erro: 'Exemplar não encontrado' });
+  }
+  const { tombo, estado } = req.body;
+  if (estado && !ESTADOS_VALIDOS.includes(estado)) {
+    return res.status(400).json({ erro: `Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}` });
+  }
+  if (tombo && exemplares.some((e) => e.tombo === tombo && e.id !== exemplar.id)) {
+    return res.status(409).json({ erro: 'Já existe um exemplar com esse tombo' });
+  }
+  if (tombo) exemplar.tombo = tombo;
+  if (estado) exemplar.estado = estado;
+  res.json(exemplar);
+});
+
 module.exports = router;
