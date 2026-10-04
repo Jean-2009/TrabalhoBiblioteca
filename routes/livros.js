@@ -17,4 +17,12 @@ router.get('/', (req, res) => {
   res.json(resultado);
 });
 
+router.get('/:id', (req, res) => {
+  const livro = livros.find((l) => l.id === parseInt(req.params.id));
+  if (!livro) {
+    return res.status(404).json({ erro: 'Livro não encontrado' });
+  }
+  res.json(livro);
+});
+
 module.exports = router;
