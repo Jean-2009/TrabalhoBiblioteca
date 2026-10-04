@@ -53,4 +53,17 @@ router.put('/:id', (req, res) => {
   res.json(livro);
 });
 
+router.delete('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const indice = livros.findIndex((l) => l.id === id);
+  if (indice === -1) {
+    return res.status(404).json({ erro: 'Livro não encontrado' });
+  }
+  if (exemplares.some((e) => e.livroId === id)) {
+    return res.status(409).json({ erro: 'Não é possível excluir um livro que possui exemplares cadastrados' });
+  }
+  livros.splice(indice, 1);
+  res.status(204).send();
+});
+
 module.exports = router;
