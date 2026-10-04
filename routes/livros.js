@@ -66,4 +66,15 @@ router.delete('/:id', (req, res) => {
   res.status(204).send();
 });
 
+router.get('/:id/disponibilidade', (req, res) => {
+  const id = parseInt(req.params.id);
+  const livro = livros.find((l) => l.id === id);
+  if (!livro) {
+    return res.status(404).json({ erro: 'Livro não encontrado' });
+  }
+  const copias = exemplares.filter((e) => e.livroId === id);
+  const disponiveis = copias.filter((e) => e.estado === 'disponivel').length;
+  res.json({ livroId: id, titulo: livro.titulo, total: copias.length, disponiveis });
+});
+
 module.exports = router;
