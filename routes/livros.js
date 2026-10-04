@@ -38,4 +38,19 @@ router.post('/', (req, res) => {
   res.status(201).json(novoLivro);
 });
 
+router.put('/:id', (req, res) => {
+  const livro = livros.find((l) => l.id === parseInt(req.params.id));
+  if (!livro) {
+    return res.status(404).json({ erro: 'Livro não encontrado' });
+  }
+  const { titulo, autor, isbn } = req.body;
+  if (!titulo || !autor) {
+    return res.status(400).json({ erro: 'Campos "titulo" e "autor" são obrigatórios' });
+  }
+  livro.titulo = titulo;
+  livro.autor = autor;
+  livro.isbn = isbn || null;
+  res.json(livro);
+});
+
 module.exports = router;
