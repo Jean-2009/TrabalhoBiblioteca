@@ -57,4 +57,16 @@ router.put('/:id', (req, res) => {
   res.json(exemplar);
 });
 
+router.delete('/:id', (req, res) => {
+  const indice = exemplares.findIndex((e) => e.id === parseInt(req.params.id));
+  if (indice === -1) {
+    return res.status(404).json({ erro: 'Exemplar não encontrado' });
+  }
+  if (exemplares[indice].estado === 'emprestado') {
+    return res.status(409).json({ erro: 'Não é possível excluir um exemplar que está emprestado' });
+  }
+  exemplares.splice(indice, 1);
+  res.status(204).send();
+});
+
 module.exports = router;
