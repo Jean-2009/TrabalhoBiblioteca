@@ -16,4 +16,12 @@ router.get('/', (req, res) => {
   res.json(exemplares.filter((e) => e.livroId === parseInt(livroId)));
 });
 
+router.get('/:id', (req, res) => {
+  const exemplar = exemplares.find((e) => e.id === parseInt(req.params.id));
+  if (!exemplar) {
+    return res.status(404).json({ erro: 'Exemplar não encontrado' });
+  }
+  res.json(exemplar);
+});
+
 module.exports = router;
