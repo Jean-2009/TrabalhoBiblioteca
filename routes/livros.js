@@ -25,4 +25,17 @@ router.get('/:id', (req, res) => {
   res.json(livro);
 });
 
+router.post('/', (req, res) => {
+  const { titulo, autor, isbn } = req.body;
+  if (!titulo || !autor) {
+    return res.status(400).json({ erro: 'Campos "titulo" e "autor" são obrigatórios' });
+  }
+  if (isbn && livros.some((l) => l.isbn === isbn)) {
+    return res.status(409).json({ erro: 'Já existe um livro com esse ISBN' });
+  }
+  const novoLivro = { id: proximoId(), titulo, autor, isbn: isbn || null };
+  livros.push(novoLivro);
+  res.status(201).json(novoLivro);
+});
+
 module.exports = router;
