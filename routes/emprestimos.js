@@ -7,12 +7,6 @@ const REGRAS = {
   professor: { limite: 5, prazoDias: 15 },
 };
 
-  const agora = new Date();
-  const temAtraso = ativos.some((e) => new Date(e.dataPrevistaDevolucao) < agora);
-  if (temAtraso) {
-    return res.status(403).json({ erro: 'Leitor bloqueado: possui empréstimo em atraso' });
-  }
-
 function proximoId() {
   return emprestimos.length ? Math.max(...emprestimos.map((e) => e.id)) + 1 : 1;
 }
@@ -61,15 +55,20 @@ router.post('/', (req, res) => {
     });
   }
 
-  const hoje = new Date();
-  const devolucao = new Date(hoje);
+  const agora = new Date();
+  const temAtraso = ativos.some((e) => new Date(e.dataPrevistaDevolucao) < agora);
+  if (temAtraso) {
+    return res.status(403).json({ erro: 'Leitor bloqueado: possui empréstimo em atraso' });
+  }
+
+  const devolucao = new Date(agora);
   devolucao.setDate(devolucao.getDate() + regra.prazoDias);
 
   const novoEmprestimo = {
     id: proximoId(),
     leitorId,
     exemplarId,
-    dataEmprestimo: hoje.toISOString(),
+    dataEmprestimo: agora.toISOString(),
     dataPrevistaDevolucao: devolucao.toISOString(),
     status: 'ativo',
   };
