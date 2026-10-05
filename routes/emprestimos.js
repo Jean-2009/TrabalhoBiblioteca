@@ -27,4 +27,43 @@ router.get('/:id', (req, res) => {
   res.json(emprestimo);
 });
 
+router.post('/', (req, res) => {
+  const { leitorId, exemplarId } = req.body || {};
+  if (!leitorId || !exemplarId) {
+    return res.status(400).json({ erro: 'Campos "leitorId" e "exemplarId" são obrigatórios' });
+  }
+
+  const leitor = leitores.find((l) => l.id === leitorId);
+  if (!leitor) {
+    return res.status(404).json({ erro: 'Leitor não encontrado' });
+  }
+
+  const exemplar = exemplares.find((e) => e.id === exemplarId);
+  if (!exemplar) {
+    return res.status(404).json({ erro: 'Exemplar não encontrado' });
+  }
+
+  if (exemplar.estado !== 'disponivel') {
+    return res.status(409).json({ erro: `Exemplar indisponível (estado atual: ${exemplar.estado})` });
+  }
+
+  const regra = REGRAS[leitor.perfil];
+  const hoje = new Date();
+  const devolucao = new Date(hoje);
+  devolucao.setDate(devolucao.getDate() + regra.prazoDias);
+
+  const novoEmprestimo = {
+    id: proximoId(),
+    leitorId,
+    exemplarId,
+    dataEmprestimo: hoje.toISOString(),
+    dataPrevistaDevolucao: devolucao.toISOString(),
+    status: 'ativo',
+  };
+
+  emprestimos.push(novoEmprestimo);
+  exemplar.estado = 'emprestado';
+  res.status(201).json(novoEmprestimo);
+});
+
 module.exports = router;
