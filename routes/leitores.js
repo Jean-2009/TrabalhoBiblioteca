@@ -61,4 +61,17 @@ router.put('/:id', (req, res) => {
   res.json(leitor);
 });
 
+router.delete('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const indice = leitores.findIndex((l) => l.id === id);
+  if (indice === -1) {
+    return res.status(404).json({ erro: 'Leitor não encontrado' });
+  }
+  if (emprestimos.some((e) => e.leitorId === id && e.status === 'ativo')) {
+    return res.status(409).json({ erro: 'Não é possível excluir um leitor com empréstimos ativos' });
+  }
+  leitores.splice(indice, 1);
+  res.status(204).send();
+});
+
 module.exports = router;
