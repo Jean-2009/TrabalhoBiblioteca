@@ -40,4 +40,25 @@ router.post('/', (req, res) => {
   res.status(201).json(novoLeitor);
 });
 
+router.put('/:id', (req, res) => {
+  const leitor = leitores.find((l) => l.id === parseInt(req.params.id));
+  if (!leitor) {
+    return res.status(404).json({ erro: 'Leitor não encontrado' });
+  }
+  const { nome, matricula, perfil } = req.body || {};
+  if (!nome || !matricula || !perfil) {
+    return res.status(400).json({ erro: 'Campos "nome", "matricula" e "perfil" são obrigatórios' });
+  }
+  if (!PERFIS_VALIDOS.includes(perfil)) {
+    return res.status(400).json({ erro: `Perfil inválido. Use: ${PERFIS_VALIDOS.join(', ')}` });
+  }
+  if (leitores.some((l) => l.matricula === matricula && l.id !== leitor.id)) {
+    return res.status(409).json({ erro: 'Já existe um leitor com essa matrícula' });
+  }
+  leitor.nome = nome;
+  leitor.matricula = matricula;
+  leitor.perfil = perfil;
+  res.json(leitor);
+});
+
 module.exports = router;
