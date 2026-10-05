@@ -24,4 +24,20 @@ router.get('/:id', (req, res) => {
   res.json(leitor);
 });
 
+router.post('/', (req, res) => {
+  const { nome, matricula, perfil } = req.body || {};
+  if (!nome || !matricula || !perfil) {
+    return res.status(400).json({ erro: 'Campos "nome", "matricula" e "perfil" são obrigatórios' });
+  }
+  if (!PERFIS_VALIDOS.includes(perfil)) {
+    return res.status(400).json({ erro: `Perfil inválido. Use: ${PERFIS_VALIDOS.join(', ')}` });
+  }
+  if (leitores.some((l) => l.matricula === matricula)) {
+    return res.status(409).json({ erro: 'Já existe um leitor com essa matrícula' });
+  }
+  const novoLeitor = { id: proximoId(), nome, matricula, perfil };
+  leitores.push(novoLeitor);
+  res.status(201).json(novoLeitor);
+});
+
 module.exports = router;
