@@ -19,4 +19,12 @@ router.get('/', (req, res) => {
   res.json(emprestimos.filter((e) => e.status === status));
 });
 
+router.get('/:id', (req, res) => {
+  const emprestimo = emprestimos.find((e) => e.id === parseInt(req.params.id));
+  if (!emprestimo) {
+    return res.status(404).json({ erro: 'Empréstimo não encontrado' });
+  }
+  res.json(emprestimo);
+});
+
 module.exports = router;
