@@ -46,8 +46,15 @@ router.post('/', (req, res) => {
   if (exemplar.estado !== 'disponivel') {
     return res.status(409).json({ erro: `Exemplar indisponível (estado atual: ${exemplar.estado})` });
   }
-
+  
   const regra = REGRAS[leitor.perfil];
+  const ativos = emprestimos.filter((e) => e.leitorId === leitorId && e.status === 'ativo');
+  if (ativos.length >= regra.limite) {
+    return res.status(409).json({
+      erro: `Limite de ${regra.limite} empréstimos ativos atingido para o perfil ${leitor.perfil}`,
+    });
+  }
+
   const hoje = new Date();
   const devolucao = new Date(hoje);
   devolucao.setDate(devolucao.getDate() + regra.prazoDias);
