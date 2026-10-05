@@ -74,4 +74,14 @@ router.delete('/:id', (req, res) => {
   res.status(204).send();
 });
 
+router.get('/:id/historico', (req, res) => {
+  const id = parseInt(req.params.id);
+  const leitor = leitores.find((l) => l.id === id);
+  if (!leitor) {
+    return res.status(404).json({ erro: 'Leitor não encontrado' });
+  }
+  const historico = emprestimos.filter((e) => e.leitorId === id);
+  res.json({ leitor: leitor.nome, total: historico.length, emprestimos: historico });
+});
+
 module.exports = router;
