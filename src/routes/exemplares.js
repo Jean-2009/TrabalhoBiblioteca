@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { livros, exemplares } from '../data/db.js';
+
 const router = express.Router();
-const { livros, exemplares } = require('../data/db');
 
 const ESTADOS_VALIDOS = ['disponivel', 'emprestado', 'manutencao'];
 
@@ -69,4 +70,4 @@ router.delete('/:id', (req, res) => {
   res.status(204).send();
 });
 
-module.exports = router;
+export default router;
