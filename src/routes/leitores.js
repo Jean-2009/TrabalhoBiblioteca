@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { leitores, emprestimos } from '../data/db.js';
+
 const router = express.Router();
-const { leitores, emprestimos } = require('../data/db');
 
 const PERFIS_VALIDOS = ['aluno', 'professor'];
 
@@ -84,4 +85,4 @@ router.get('/:id/historico', (req, res) => {
   res.json({ leitor: leitor.nome, total: historico.length, emprestimos: historico });
 });
 
-module.exports = router;
+export default router;
