@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { livros, exemplares } from '../data/db.js';
+
 const router = express.Router();
-const { livros, exemplares } = require('../data/db');
 
 function proximoId() {
   return livros.length ? Math.max(...livros.map((l) => l.id)) + 1 : 1;
@@ -77,4 +78,4 @@ router.get('/:id/disponibilidade', (req, res) => {
   res.json({ livroId: id, titulo: livro.titulo, total: copias.length, disponiveis });
 });
 
-module.exports = router;
+export default router;

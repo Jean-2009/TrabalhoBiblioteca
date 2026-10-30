@@ -10,4 +10,4 @@ const leitores = [
 const emprestimos = [];
 const avaliacoes = [];
 
-module.exports = { livros, exemplares, leitores, emprestimos, avaliacoes };
+export { livros, exemplares, leitores, emprestimos, avaliacoes };
