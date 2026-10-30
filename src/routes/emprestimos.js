@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const { leitores, exemplares, emprestimos } = require('../data/db');
+import express from 'express';
+import { leitores, exemplares, emprestimos } from '../data/db.js';
 
+const router = express.Router();
 const REGRAS = {
   aluno: { limite: 3, prazoDias: 7 },
   professor: { limite: 5, prazoDias: 15 },
@@ -78,4 +78,4 @@ router.post('/', (req, res) => {
   res.status(201).json(novoEmprestimo);
 });
 
-module.exports = router;
+export default router;
