@@ -1,0 +1,110 @@
+### List books
+GET http://localhost:3000/livros
+
+### Create book
+POST http://localhost:3000/livros
+Content-Type: application/json
+
+{ "titulo": "O Cortiço", "autor": "Aluísio Azevedo", "isbn": "9788508040001" }
+
+### Book availability
+GET http://localhost:3000/livros/1/disponibilidade
+
+### Create copy
+POST http://localhost:3000/exemplares
+Content-Type: application/json
+
+{ "livroId": 1, "tombo": "BIB-0002" }
+
+### List readers
+GET http://localhost:3000/leitores
+
+### Create reader
+POST http://localhost:3000/leitores
+Content-Type: application/json
+
+{ "nome": "João Souza", "matricula": "2026002", "perfil": "professor" }
+
+### Reader history
+GET http://localhost:3000/leitores/1/historico
+
+### Create loan
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 1, "exemplarId": 1 }
+
+### List active loans
+GET http://localhost:3000/emprestimos?status=ativo
+
+### Create loan again (expected 409: copy unavailable)
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 1, "exemplarId": 1 }
+
+### Create loan with invalid reader (expected 404)
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 999, "exemplarId": 1 }
+
+### Create loan without body fields (expected 400)
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{}
+
+### Create copy 2
+POST http://localhost:3000/exemplares
+Content-Type: application/json
+
+{ "livroId": 1, "tombo": "BIB-0003" }
+
+### Create copy 3
+POST http://localhost:3000/exemplares
+Content-Type: application/json
+
+{ "livroId": 1, "tombo": "BIB-0004" }
+
+### Loan copy 2 to reader 1
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 1, "exemplarId": 2 }
+
+### Loan copy 3 to reader 1
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 1, "exemplarId": 3 }
+
+### Loan copy 4 to reader 1 (expected 409: limit reached)
+POST http://localhost:3000/emprestimos
+Content-Type: application/json
+
+{ "leitorId": 1, "exemplarId": 4 }
+
+### Delete reader with active loans (expected 409)
+DELETE http://localhost:3000/leitores/1
+
+### Create reader with invalid profile (expected 400)
+POST http://localhost:3000/leitores
+Content-Type: application/json
+
+{ "nome": "Teste", "matricula": "9999", "perfil": "visitante" }
+
+### Create reader with duplicate registration (expected 409)
+POST http://localhost:3000/leitores
+Content-Type: application/json
+
+{ "nome": "Outra Maria", "matricula": "2026001", "perfil": "aluno" }
+
+### List copies
+GET http://localhost:3000/exemplares
+
+### Create copy 4
+POST http://localhost:3000/exemplares
+Content-Type: application/json
+
+{ "livroId": 1, "tombo": "BIB-0002" }
