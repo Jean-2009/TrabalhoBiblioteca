@@ -78,6 +78,7 @@ export async function criar({ leitorId, exemplarId } = {}) {
     dataEmprestimo: agora,
     dataPrevistaDevolucao: devolucao,
     status: 'ativo',
+    renovacoes: 0,
   });
   await Exemplares.atualizar(String(exemplarId), { estado: 'emprestado' });
   return emprestimo;
