@@ -44,3 +44,84 @@ src/
 ```
 
 Flow of a request: `route -> controller -> service -> model -> MongoDB`. Errors thrown by the services (`AppError`) are converted to HTTP responses by the error handler.
+
+
+## Entities
+
+- **livros:** book data (title, author, ISBN)
+- **exemplares:** physical copies of a book (`tombo`, state: `disponivel`, `emprestado`, `manutencao`)
+- **leitores:** readers (name, registration, profile: `aluno` or `professor`)
+- **emprestimos:** loans linking a reader and a copy (status: `ativo` or `devolvido`)
+- **avaliacoes:** ratings of a book by a reader (grade from 1 to 5 and comment)
+
+Full CRUD: livros, exemplares and leitores. A book can have many copies, a copy can have many loans, and a reader can have many loans and ratings. A loan is for a specific copy, but availability and ratings belong to the book.
+
+All ids are MongoDB ObjectId strings.
+
+## Endpoints
+
+### Livros
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/livros` | List books (filter `?titulo=`) |
+| GET | `/livros/:id` | Get a book |
+| POST | `/livros` | Create a book (`titulo` and `autor` required, unique `isbn`) |
+| PUT | `/livros/:id` | Update a book |
+| DELETE | `/livros/:id` | Delete a book (blocked if it has copies) |
+| GET | `/livros/:id/disponibilidade` | Total and available copies |
+| POST | `/livros/:id/avaliacoes` | Rate a book (`leitorId`, `nota` from 1 to 5, optional `comentario`) |
+| GET | `/livros/:id/avaliacoes` | List the ratings of a book with the total and the average grade |
+
+### Exemplares
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/exemplares` | List copies (filter `?livroId=`) |
+| GET | `/exemplares/:id` | Get a copy |
+| POST | `/exemplares` | Create a copy (`livroId` and unique `tombo`) |
+| PUT | `/exemplares/:id` | Update `tombo` or `estado` |
+| DELETE | `/exemplares/:id` | Delete a copy (blocked if borrowed) |
+
+### Leitores
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/leitores` | List readers (filter `?perfil=`) |
+| GET | `/leitores/:id` | Get a reader |
+| POST | `/leitores` | Create a reader (`nome`, unique `matricula`, `perfil`) |
+| PUT | `/leitores/:id` | Update a reader |
+| DELETE | `/leitores/:id` | Delete a reader (blocked if active loans) |
+| GET | `/leitores/:id/historico` | Loan history of a reader |
+
+### Emprestimos
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/emprestimos` | List loans (filter `?status=`) |
+| GET | `/emprestimos/:id` | Get a loan |
+| POST | `/emprestimos` | Create a loan (`leitorId` and `exemplarId`) |
+| PATCH | `/emprestimos/:id/devolucao` | Return a loan: frees the copy and calculates the fine |
+| PATCH | `/emprestimos/:id/renovacao` | Renew a loan: extends the due date |
+
+Example body for `POST /emprestimos`:
+
+```json
+{ "leitorId": "66f1a2b3c4d5e6f7a8b9c0d1", "exemplarId": "66f1a2b3c4d5e6f7a8b9c0d2" }
+```
+
+Example body for `POST /livros/:id/avaliacoes`:
+
+```json
+{ "leitorId": "66f1a2b3c4d5e6f7a8b9c0d1", "nota": 5, "comentario": "Great book" }
+```
+
+Example response of `PATCH /emprestimos/:id/devolucao` for a loan returned 4 days late:
+
+```json
+{
+  "status": "devolvido",
+  "diasAtraso": 4,
+  "multa": 2
+}
+```
