@@ -82,3 +82,22 @@ export async function criar({ leitorId, exemplarId } = {}) {
   await Exemplares.atualizar(String(exemplarId), { estado: 'emprestado' });
   return emprestimo;
 }
+
+export async function devolver(id) {
+  const emprestimo = await buscar(id);
+  if (emprestimo.status !== 'ativo') {
+    throw new AppError('Empréstimo já foi devolvido', 409);
+  }
+
+  const dataDevolucao = new Date();
+  const { diasAtraso, multa } = calcularAtraso(emprestimo.dataPrevistaDevolucao, dataDevolucao);
+
+  const atualizado = await Emprestimos.atualizar(id, {
+    status: 'devolvido',
+    dataDevolucao,
+    diasAtraso,
+    multa,
+  });
+  await Exemplares.atualizar(emprestimo.exemplarId, { estado: 'disponivel' });
+  return atualizado;
+}
