@@ -1,110 +1,110 @@
-### List books
-GET http://localhost:3000/livros
+@base = http://localhost:3000
 
 ### Create book
-POST http://localhost:3000/livros
+# @name livro
+POST {{base}}/livros
 Content-Type: application/json
 
-{ "titulo": "O Cortiço", "autor": "Aluísio Azevedo", "isbn": "9788508040001" }
-
-### Book availability
-GET http://localhost:3000/livros/1/disponibilidade
+{ "titulo": "O Cortiço", "autor": "Aluísio Azevedo", "isbn": "{{$timestamp}}" }
 
 ### Create copy
-POST http://localhost:3000/exemplares
+# @name exemplar
+POST {{base}}/exemplares
 Content-Type: application/json
 
-{ "livroId": 1, "tombo": "BIB-0002" }
-
-### List readers
-GET http://localhost:3000/leitores
+{ "livroId": "{{livro.response.body._id}}", "tombo": "BIB-{{$timestamp}}" }
 
 ### Create reader
-POST http://localhost:3000/leitores
+# @name leitor
+POST {{base}}/leitores
 Content-Type: application/json
 
-{ "nome": "João Souza", "matricula": "2026002", "perfil": "professor" }
+{ "nome": "João Souza", "matricula": "{{$timestamp}}", "perfil": "aluno" }
 
-### Reader history
-GET http://localhost:3000/leitores/1/historico
+### Book availability (1 copy available)
+GET {{base}}/livros/{{livro.response.body._id}}/disponibilidade
 
 ### Create loan
-POST http://localhost:3000/emprestimos
+# @name emprestimo
+POST {{base}}/emprestimos
 Content-Type: application/json
 
-{ "leitorId": 1, "exemplarId": 1 }
-
-### List active loans
-GET http://localhost:3000/emprestimos?status=ativo
+{ "leitorId": "{{leitor.response.body._id}}", "exemplarId": "{{exemplar.response.body._id}}" }
 
 ### Create loan again (expected 409: copy unavailable)
-POST http://localhost:3000/emprestimos
+POST {{base}}/emprestimos
 Content-Type: application/json
 
-{ "leitorId": 1, "exemplarId": 1 }
+{ "leitorId": "{{leitor.response.body._id}}", "exemplarId": "{{exemplar.response.body._id}}" }
 
-### Create loan with invalid reader (expected 404)
-POST http://localhost:3000/emprestimos
+### Rate before returning (expected 403)
+POST {{base}}/livros/{{livro.response.body._id}}/avaliacoes
 Content-Type: application/json
 
-{ "leitorId": 999, "exemplarId": 1 }
+{ "leitorId": "{{leitor.response.body._id}}", "nota": 5, "comentario": "Great book" }
+
+### Renew loan
+PATCH {{base}}/emprestimos/{{emprestimo.response.body._id}}/renovacao
+
+### Renew again (expected 409: renewal limit)
+PATCH {{base}}/emprestimos/{{emprestimo.response.body._id}}/renovacao
+
+### Return loan (fine 0 when on time)
+PATCH {{base}}/emprestimos/{{emprestimo.response.body._id}}/devolucao
+
+### Return again (expected 409: already returned)
+PATCH {{base}}/emprestimos/{{emprestimo.response.body._id}}/devolucao
+
+### Rate the book
+POST {{base}}/livros/{{livro.response.body._id}}/avaliacoes
+Content-Type: application/json
+
+{ "leitorId": "{{leitor.response.body._id}}", "nota": 5, "comentario": "Great book" }
+
+### Rate again (expected 409: already rated)
+POST {{base}}/livros/{{livro.response.body._id}}/avaliacoes
+Content-Type: application/json
+
+{ "leitorId": "{{leitor.response.body._id}}", "nota": 4 }
+
+### Rate with invalid grade (expected 400)
+POST {{base}}/livros/{{livro.response.body._id}}/avaliacoes
+Content-Type: application/json
+
+{ "leitorId": "{{leitor.response.body._id}}", "nota": 6 }
+
+### Ratings and average of the book
+GET {{base}}/livros/{{livro.response.body._id}}/avaliacoes
+
+### Reader history
+GET {{base}}/leitores/{{leitor.response.body._id}}/historico
+
+### List active loans
+GET {{base}}/emprestimos?status=ativo
 
 ### Create loan without body fields (expected 400)
-POST http://localhost:3000/emprestimos
+POST {{base}}/emprestimos
 Content-Type: application/json
 
 {}
 
-### Create copy 2
-POST http://localhost:3000/exemplares
+### Create loan with invalid reader (expected 404)
+POST {{base}}/emprestimos
 Content-Type: application/json
 
-{ "livroId": 1, "tombo": "BIB-0003" }
-
-### Create copy 3
-POST http://localhost:3000/exemplares
-Content-Type: application/json
-
-{ "livroId": 1, "tombo": "BIB-0004" }
-
-### Loan copy 2 to reader 1
-POST http://localhost:3000/emprestimos
-Content-Type: application/json
-
-{ "leitorId": 1, "exemplarId": 2 }
-
-### Loan copy 3 to reader 1
-POST http://localhost:3000/emprestimos
-Content-Type: application/json
-
-{ "leitorId": 1, "exemplarId": 3 }
-
-### Loan copy 4 to reader 1 (expected 409: limit reached)
-POST http://localhost:3000/emprestimos
-Content-Type: application/json
-
-{ "leitorId": 1, "exemplarId": 4 }
-
-### Delete reader with active loans (expected 409)
-DELETE http://localhost:3000/leitores/1
+{ "leitorId": "000000000000000000000000", "exemplarId": "{{exemplar.response.body._id}}" }
 
 ### Create reader with invalid profile (expected 400)
-POST http://localhost:3000/leitores
+POST {{base}}/leitores
 Content-Type: application/json
 
 { "nome": "Teste", "matricula": "9999", "perfil": "visitante" }
 
 ### Create reader with duplicate registration (expected 409)
-POST http://localhost:3000/leitores
+POST {{base}}/leitores
 Content-Type: application/json
 
-{ "nome": "Outra Maria", "matricula": "2026001", "perfil": "aluno" }
+{ "nome": "Outro João", "matricula": "{{leitor.response.body.matricula}}", "perfil": "aluno" }
 
-### List copies
-GET http://localhost:3000/exemplares
-
-### Create copy 4
-POST http://localhost:3000/exemplares
-Content-Type: application/json
-
-{ "livroId": 1, "tombo": "BIB-0002" }
+### Delete book that has copies (expected 409)
+DELETE {{base}}/livros/{{livro.response.body._id}}
