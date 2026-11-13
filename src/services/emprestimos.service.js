@@ -9,6 +9,19 @@ const REGRAS = {
   professor: { limite: 5, prazoDias: 15 },
 };
 
+// Business rule: fine of R$ 0.50 per day of delay (any started day counts)
+const MULTA_POR_DIA = 0.5;
+const MS_POR_DIA = 24 * 60 * 60 * 1000;
+
+function calcularAtraso(dataPrevista, dataDevolucao) {
+  const diferenca = dataDevolucao - new Date(dataPrevista);
+  if (diferenca <= 0) {
+    return { diasAtraso: 0, multa: 0 };
+  }
+  const diasAtraso = Math.ceil(diferenca / MS_POR_DIA);
+  return { diasAtraso, multa: Number((diasAtraso * MULTA_POR_DIA).toFixed(2)) };
+}
+
 export async function listar(status) {
   return Emprestimos.buscarTodas(status ? { status } : {});
 }
