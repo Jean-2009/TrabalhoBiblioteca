@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca</title>
+</head>
+<body>
+  <h1>Biblioteca</h1>
+  <ul id="livros"></ul>
+
+  <script type="module">
+    import { api } from './js/api.js';
+
+    const livros = await api('/livros');
+    document.getElementById('livros').innerHTML =
+      livros.map((l) => `<li>${l.titulo} - ${l.autor}</li>`).join('');
+  </script>
+</body>
+</html>
