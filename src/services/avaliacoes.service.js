@@ -48,3 +48,17 @@ export async function criar(livroId, { leitorId, nota, comentario } = {}) {
     data: new Date(),
   });
 }
+
+export async function listarPorLivro(livroId) {
+  const livro = await Livros.buscarPorId(livroId);
+  if (!livro) {
+    throw new AppError('Livro não encontrado', 404);
+  }
+
+  const avaliacoes = await Avaliacoes.buscarTodas({ livroId });
+  const total = avaliacoes.length;
+  const soma = avaliacoes.reduce((acumulado, a) => acumulado + a.nota, 0);
+  const media = total > 0 ? Number((soma / total).toFixed(2)) : null;
+
+  return { livroId, titulo: livro.titulo, total, media, avaliacoes };
+}
