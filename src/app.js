@@ -1,9 +1,9 @@
 import express from 'express';
 import logger from './middlewares/logger.js';
-import livrosRoutes from './routes/livros.js';
-import exemplaresRoutes from './routes/exemplares.js';
-import leitoresRoutes from './routes/leitores.js';
-import emprestimosRoutes from './routes/emprestimos.js';
+import livrosRoutes from './routes/livros.routes.js';
+import exemplaresRoutes from './routes/exemplares.routes.js';
+import leitoresRoutes from './routes/leitores.routes.js';
+import emprestimosRoutes from './routes/emprestimos.routes.js';
 
 const app = express();
 
