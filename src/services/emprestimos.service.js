@@ -9,6 +9,19 @@ const REGRAS = {
   professor: { limite: 5, prazoDias: 15 },
 };
 
+// Business rule: fine of R$ 0.50 per day of delay (any started day counts)
+const MULTA_POR_DIA = 0.5;
+const MS_POR_DIA = 24 * 60 * 60 * 1000;
+
+function calcularAtraso(dataPrevista, dataDevolucao) {
+  const diferenca = dataDevolucao - new Date(dataPrevista);
+  if (diferenca <= 0) {
+    return { diasAtraso: 0, multa: 0 };
+  }
+  const diasAtraso = Math.ceil(diferenca / MS_POR_DIA);
+  return { diasAtraso, multa: Number((diasAtraso * MULTA_POR_DIA).toFixed(2)) };
+}
+
 export async function listar(status) {
   return Emprestimos.buscarTodas(status ? { status } : {});
 }
@@ -68,4 +81,23 @@ export async function criar({ leitorId, exemplarId } = {}) {
   });
   await Exemplares.atualizar(String(exemplarId), { estado: 'emprestado' });
   return emprestimo;
+}
+
+export async function devolver(id) {
+  const emprestimo = await buscar(id);
+  if (emprestimo.status !== 'ativo') {
+    throw new AppError('Empréstimo já foi devolvido', 409);
+  }
+
+  const dataDevolucao = new Date();
+  const { diasAtraso, multa } = calcularAtraso(emprestimo.dataPrevistaDevolucao, dataDevolucao);
+
+  const atualizado = await Emprestimos.atualizar(id, {
+    status: 'devolvido',
+    dataDevolucao,
+    diasAtraso,
+    multa,
+  });
+  await Exemplares.atualizar(emprestimo.exemplarId, { estado: 'disponivel' });
+  return atualizado;
 }

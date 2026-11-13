@@ -6,5 +6,6 @@ const router = Router();
 router.get('/', EmprestimosController.listar);
 router.get('/:id', EmprestimosController.buscar);
 router.post('/', EmprestimosController.criar);
+router.patch('/:id/devolucao', EmprestimosController.devolver);
 
 export default router;
