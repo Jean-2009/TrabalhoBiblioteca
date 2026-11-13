@@ -11,5 +11,6 @@ router.get('/:id', LivrosController.buscar);
 router.post('/', LivrosController.criar);
 router.put('/:id', LivrosController.atualizar);
 router.delete('/:id', LivrosController.remover);
+router.get('/:id/avaliacoes', AvaliacoesController.listar);
 
 export default router;
