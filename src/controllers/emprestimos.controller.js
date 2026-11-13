@@ -19,3 +19,8 @@ export async function devolver(req, res) {
   const emprestimo = await EmprestimosService.devolver(req.params.id);
   res.json(emprestimo);
 }
+
+export async function renovar(req, res) {
+  const emprestimo = await EmprestimosService.renovar(req.params.id);
+  res.json(emprestimo);
+}

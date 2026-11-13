@@ -7,5 +7,6 @@ router.get('/', EmprestimosController.listar);
 router.get('/:id', EmprestimosController.buscar);
 router.post('/', EmprestimosController.criar);
 router.patch('/:id/devolucao', EmprestimosController.devolver);
+router.patch('/:id/renovacao', EmprestimosController.renovar);
 
 export default router;

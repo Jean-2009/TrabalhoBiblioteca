@@ -11,6 +11,8 @@ const REGRAS = {
 
 // Business rule: fine of R$ 0.50 per day of delay (any started day counts)
 const MULTA_POR_DIA = 0.5;
+// Business rule: maximum renewals per loan
+const MAX_RENOVACOES = 1;
 const MS_POR_DIA = 24 * 60 * 60 * 1000;
 
 function calcularAtraso(dataPrevista, dataDevolucao) {
@@ -78,6 +80,7 @@ export async function criar({ leitorId, exemplarId } = {}) {
     dataEmprestimo: agora,
     dataPrevistaDevolucao: devolucao,
     status: 'ativo',
+    renovacoes: 0,
   });
   await Exemplares.atualizar(String(exemplarId), { estado: 'emprestado' });
   return emprestimo;
@@ -100,4 +103,36 @@ export async function devolver(id) {
   });
   await Exemplares.atualizar(emprestimo.exemplarId, { estado: 'disponivel' });
   return atualizado;
+}
+
+export async function renovar(id) {
+  const emprestimo = await buscar(id);
+  if (emprestimo.status !== 'ativo') {
+    throw new AppError('Só é possível renovar empréstimos ativos', 409);
+  }
+
+  // Rule: readers with overdue loans cannot renew
+  const agora = new Date();
+  const ativos = await Emprestimos.buscarTodas({
+    leitorId: emprestimo.leitorId,
+    status: 'ativo',
+  });
+  if (ativos.some((e) => new Date(e.dataPrevistaDevolucao) < agora)) {
+    throw new AppError('Leitor bloqueado: possui empréstimo em atraso', 403);
+  }
+
+  const renovacoes = emprestimo.renovacoes ?? 0;
+  if (renovacoes >= MAX_RENOVACOES) {
+    throw new AppError(`Limite de renovações atingido (máximo ${MAX_RENOVACOES} por empréstimo)`, 409);
+  }
+
+  const leitor = await Leitores.buscarPorId(emprestimo.leitorId);
+  const { prazoDias } = REGRAS[leitor.perfil];
+  const novaData = new Date(emprestimo.dataPrevistaDevolucao);
+  novaData.setDate(novaData.getDate() + prazoDias);
+
+  return Emprestimos.atualizar(id, {
+    dataPrevistaDevolucao: novaData,
+    renovacoes: renovacoes + 1,
+  });
 }
