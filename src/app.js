@@ -5,8 +5,10 @@ import livrosRoutes from './routes/livros.routes.js';
 import exemplaresRoutes from './routes/exemplares.routes.js';
 import leitoresRoutes from './routes/leitores.routes.js';
 import emprestimosRoutes from './routes/emprestimos.routes.js';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(logger);
