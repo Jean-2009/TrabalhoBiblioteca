@@ -1,0 +1,71 @@
+import * as Emprestimos from '../models/emprestimos.model.js';
+import * as Leitores from '../models/leitores.model.js';
+import * as Exemplares from '../models/exemplares.model.js';
+import { AppError } from '../errors/AppError.js';
+
+// Business rule: loan limit and loan period by reader profile
+const REGRAS = {
+  aluno: { limite: 3, prazoDias: 7 },
+  professor: { limite: 5, prazoDias: 15 },
+};
+
+export async function listar(status) {
+  return Emprestimos.buscarTodas(status ? { status } : {});
+}
+
+export async function buscar(id) {
+  const emprestimo = await Emprestimos.buscarPorId(id);
+  if (!emprestimo) {
+    throw new AppError('Empréstimo não encontrado', 404);
+  }
+  return emprestimo;
+}
+
+export async function criar({ leitorId, exemplarId } = {}) {
+  if (!leitorId || !exemplarId) {
+    throw new AppError('Campos "leitorId" e "exemplarId" são obrigatórios', 400);
+  }
+
+  const leitor = await Leitores.buscarPorId(String(leitorId));
+  if (!leitor) {
+    throw new AppError('Leitor não encontrado', 404);
+  }
+
+  const exemplar = await Exemplares.buscarPorId(String(exemplarId));
+  if (!exemplar) {
+    throw new AppError('Exemplar não encontrado', 404);
+  }
+
+  if (exemplar.estado !== 'disponivel') {
+    throw new AppError(`Exemplar indisponível (estado atual: ${exemplar.estado})`, 409);
+  }
+
+  // Rule 1: loan limit by reader profile
+  const regra = REGRAS[leitor.perfil];
+  const ativos = await Emprestimos.buscarTodas({ leitorId: String(leitorId), status: 'ativo' });
+  if (ativos.length >= regra.limite) {
+    throw new AppError(
+      `Limite de ${regra.limite} empréstimos ativos atingido para o perfil ${leitor.perfil}`,
+      409
+    );
+  }
+
+  // Rule 2: readers with overdue loans are blocked
+  const agora = new Date();
+  if (ativos.some((e) => new Date(e.dataPrevistaDevolucao) < agora)) {
+    throw new AppError('Leitor bloqueado: possui empréstimo em atraso', 403);
+  }
+
+  const devolucao = new Date(agora);
+  devolucao.setDate(devolucao.getDate() + regra.prazoDias);
+
+  const emprestimo = await Emprestimos.inserir({
+    leitorId: String(leitorId),
+    exemplarId: String(exemplarId),
+    dataEmprestimo: agora,
+    dataPrevistaDevolucao: devolucao,
+    status: 'ativo',
+  });
+  await Exemplares.atualizar(String(exemplarId), { estado: 'emprestado' });
+  return emprestimo;
+}
