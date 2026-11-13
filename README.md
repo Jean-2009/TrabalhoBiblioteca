@@ -125,3 +125,31 @@ Example response of `PATCH /emprestimos/:id/devolucao` for a loan returned 4 day
   "multa": 2
 }
 ```
+
+
+## Business rules
+
+1. **Loan limit by profile:** students can have up to 3 active loans (7 days) and teachers up to 5 (15 days). Example: a student with 3 active loans trying to borrow a fourth gets `409`.
+2. **Block by overdue loan and fine:** a reader with an overdue loan cannot borrow new books nor renew. The fine is R$ 0.50 per day of delay (any started day counts) and is calculated on return. Example: a book returned 3.5 days after the due date counts 4 days and generates a fine of R$ 2.00.
+3. **Renewal:** extends the due date by the period of the reader profile (7 days for students, 15 for teachers). It is blocked for readers with overdue loans (`403`) and limited to 1 renewal per loan (`409`).
+4. **Ratings:** only a reader who already returned a copy of the book can rate it (`403`), each reader rates each book only once (`409`) and the grade must be an integer from 1 to 5 (`400`).
+5. **Book versus copy:** the loan is for a specific copy, but availability and ratings belong to the book. A copy can only be borrowed when its state is `disponivel`.
+
+## Error format and status codes
+
+Every error returns a JSON body in the format `{ "erro": "message" }`.
+
+| Status | Meaning |
+|---|---|
+| 200 | Success |
+| 201 | Resource created |
+| 204 | Deleted, no content |
+| 400 | Invalid or missing data (or malformed JSON) |
+| 403 | Operation blocked by a business rule (for example, overdue loan) |
+| 404 | Resource or route not found |
+| 409 | Conflict (limit reached, duplicate value, copy unavailable) |
+| 500 | Unexpected internal error |
+
+## Optional resources
+
+CORS is enabled so a front-end served from another origin can consume the API.
