@@ -8,7 +8,7 @@
     "db:up": "docker start TrabalhoBiblioteca || docker run -d --name TrabalhoBiblioteca -p 127.0.0.1:27017:27017 -v TrabalhoBiblioteca-data:/data/db mongo:8",
     "db:down": "docker stop TrabalhoBiblioteca",
     "db:logs": "docker logs -f TrabalhoBiblioteca",
-    "db:reset": "docker rm -f TrabalhoBiblioteca; docker volume rm TrabalhoBiblioteca-data",
+   "db:reset": "docker rm -f TrabalhoBiblioteca && docker volume rm TrabalhoBiblioteca-data",
     "predev": "npm run db:up",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js"
