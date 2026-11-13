@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import * as LivrosController from '../controllers/livros.controller.js';
+import * as AvaliacoesController from '../controllers/avaliacoes.controller.js';
 
 const router = Router();
 
 router.get('/', LivrosController.listar);
 router.get('/:id/disponibilidade', LivrosController.disponibilidade);
+router.post('/:id/avaliacoes', AvaliacoesController.criar);
 router.get('/:id', LivrosController.buscar);
 router.post('/', LivrosController.criar);
 router.put('/:id', LivrosController.atualizar);
