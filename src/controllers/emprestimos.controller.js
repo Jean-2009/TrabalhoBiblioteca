@@ -14,3 +14,8 @@ export async function criar(req, res) {
   const emprestimo = await EmprestimosService.criar(req.body);
   res.status(201).json(emprestimo);
 }
+
+export async function devolver(req, res) {
+  const emprestimo = await EmprestimosService.devolver(req.params.id);
+  res.json(emprestimo);
+}
