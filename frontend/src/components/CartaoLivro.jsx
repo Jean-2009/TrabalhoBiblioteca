@@ -1,9 +1,13 @@
-function CartaoLivro({ livro }) {
+function CartaoLivro({ livro, onEditar, onExcluir }) {
   return (
     <article className="cartao">
       <h3>{livro.titulo}</h3>
       <p>Autor: {livro.autor}</p>
       <p>ISBN: {livro.isbn || 'Não informado'}</p>
+      <div className="acoes">
+        <button type="button" onClick={() => onEditar?.(livro)}>Editar</button>
+        <button type="button" onClick={() => onExcluir?.(livro)}>Excluir</button>
+      </div>
     </article>
   )
 }
