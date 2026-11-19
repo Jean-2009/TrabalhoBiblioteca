@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { apiGet, apiPost, extrairLista } from './api'
+import { apiGet, apiPost, apiPut, apiDelete, extrairLista } from './api'
 import FormularioLivro from './components/FormularioLivro'
 import ListaLivros from './components/ListaLivros'
 
@@ -7,6 +7,8 @@ function App() {
   const [livros, setLivros] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(null)
+  const [editando, setEditando] = useState(null)
+  const [erroAcao, setErroAcao] = useState(null)
 
   useEffect(() => {
     const controle = new AbortController()
@@ -32,11 +34,35 @@ function App() {
     return () => controle.abort()
   }, [])
 
-  async function cadastrar(dados) {
-    // POST /livros devolve 201 com o livro criado (já com _id)
-    const criado = await apiPost('/livros', dados)
-    // atualiza a lista pelo estado, sem refazer o GET
-    setLivros((atual) => [...atual, criado])
+   async function salvar(dados) {
+    if (editando) {
+      // PUT /livros/:id devolve o livro atualizado
+      const atualizado = await apiPut(`/livros/${editando._id}`, dados)
+      setLivros((atual) =>
+        atual.map((l) => (l._id === atualizado._id ? atualizado : l))
+      )
+      setEditando(null)
+    } else {
+      const criado = await apiPost('/livros', dados)
+      setLivros((atual) => [...atual, criado])
+    }
+  }
+
+  async function excluir(livro) {
+    if (!window.confirm(`Excluir "${livro.titulo}"?`)) return
+    setErroAcao(null)
+    try {
+      await apiDelete(`/livros/${livro._id}`)
+      setLivros((atual) => atual.filter((l) => l._id !== livro._id))
+      if (editando?._id === livro._id) setEditando(null)
+    } catch (e) {
+      setErroAcao(e.message)
+    }
+  }
+
+  function iniciarEdicao(livro) {
+    setErroAcao(null)
+    setEditando(livro)
   }
 
   return (
@@ -46,13 +72,27 @@ function App() {
       </header>
 
       <main>
-        <section>
-          <h2>Novo livro</h2>
-          <FormularioLivro onSalvar={cadastrar} />
+         <section>
+          <h2>{editando ? 'Editar livro' : 'Novo livro'}</h2>
+          <FormularioLivro
+            key={editando?._id ?? 'novo'}
+            livroInicial={editando}
+            onSalvar={salvar}
+            onCancelar={() => setEditando(null)}
+          />
         </section>
-
         <section>
+
+
           <h2>Livros</h2>
+          {erroAcao && <p role="alert" className="erro">{erroAcao}</p>}
+          {!carregando && !erro && livros.length > 0 && (
+            <ListaLivros
+              livros={livros}
+              onEditar={iniciarEdicao}
+              onExcluir={excluir}
+            />
+          )}
           {carregando && <p>Carregando livros...</p>}
           {!carregando && erro && <p role="alert">Erro: {erro}</p>}
           {!carregando && !erro && livros.length === 0 && (
