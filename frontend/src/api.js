@@ -21,23 +21,21 @@ async function requisicao(caminho, opcoes = {}) {
     configuracoes.body = JSON.stringify(body)
   }
 
-  let resp
+   let resp
   try {
     resp = await fetch(`${BASE_URL}${caminho}`, configuracoes)
   } catch (e) {
     if (e.name === 'AbortError') throw e
-    throw new Error('Não foi possível conectar à API. Verifique se o servidor está rodando.')
+    throw new Error(
+      'Não foi possível conectar à API. Verifique se o servidor está rodando.',
+      { cause: e }
+    )
   }
 
   if (resp.status === 204) return null
 
-  let dados = null
-  try {
-    dados = await resp.json()
-  } catch {
-    dados = null
-  }
-
+    const dados = await resp.json().catch(() => null)
+    
   if (!resp.ok) {
     throw new ApiError(resp.status, resp.statusText, dados?.erro ?? dados?.message)
   }
