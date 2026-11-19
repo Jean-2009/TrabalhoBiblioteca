@@ -3,10 +3,16 @@ import { validarLivro } from '../utils/validarLivro'
 
 const FORM_VAZIO = { titulo: '', autor: '', isbn: '' }
 
-function FormularioLivro({ onSalvar }) {
-  const [form, setForm] = useState(FORM_VAZIO)
+function formInicial(livro) {
+  if (!livro) return FORM_VAZIO
+  return { titulo: livro.titulo, autor: livro.autor, isbn: livro.isbn ?? '' }
+}
+
+function FormularioLivro({ onSalvar, livroInicial = null, onCancelar }) {
+  const [form, setForm] = useState(() => formInicial(livroInicial))
   const [erro, setErro] = useState(null)
   const [enviando, setEnviando] = useState(false)
+  const editando = Boolean(livroInicial)
 
   function alterar(e) {
     setForm((atual) => ({ ...atual, [e.target.name]: e.target.value }))
@@ -27,7 +33,7 @@ function FormularioLivro({ onSalvar }) {
     try {
       setEnviando(true)
       await onSalvar(dados)
-      setForm(FORM_VAZIO)
+      if (!editando) setForm(FORM_VAZIO)
     } catch (e) {
       setErro(e.message)
     } finally {
@@ -50,8 +56,13 @@ function FormularioLivro({ onSalvar }) {
         <input id="isbn" name="isbn" value={form.isbn} onChange={alterar} />
       </div>
       <button type="submit" disabled={enviando}>
-        {enviando ? 'Salvando...' : 'Cadastrar'}
+        {enviando ? 'Salvando...' : editando ? 'Salvar alterações' : 'Cadastrar'}
       </button>
+      {editando && (
+        <button type="button" onClick={onCancelar} disabled={enviando}>
+          Cancelar
+        </button>
+      )}
       {erro && <p role="alert" className="erro">{erro}</p>}
     </form>
   )
