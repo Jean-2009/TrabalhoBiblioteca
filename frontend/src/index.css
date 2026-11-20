@@ -399,3 +399,169 @@ input:focus-visible {
   width: 3.2rem;
   height: 3.2rem;
 }
+
+.catalogo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.catalogo > section {
+  min-width: 0;
+}
+
+.painel {
+  padding: 1.4rem;
+  background: var(--madeira);
+  border: 4px double var(--latao);
+  border-radius: 6px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), inset 0 0 40px rgba(0, 0, 0, 0.35);
+}
+
+.painel h2 {
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  color: var(--latao);
+  font-size: 1.3rem;
+  border-bottom: 4px double rgba(197, 160, 89, 0.45);
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1.6rem 1.25rem;
+}
+
+.cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1.2rem 1.1rem 1.1rem 2.5rem;
+  background: var(--papel), var(--musgo);
+  border: 4px double var(--latao);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: inset 16px 0 14px -12px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.cartao::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1.2rem;
+  background: linear-gradient(transparent 12%, var(--latao) 12% 14%, transparent 14% 86%, var(--latao) 86% 88%, transparent 88%),
+    linear-gradient(90deg, #0f1712, #24362b);
+  border-right: 2px solid var(--latao);
+}
+
+.cartao:hover {
+  border-color: var(--latao2);
+  box-shadow: inset 16px 0 14px -12px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.5), var(--vela);
+}
+
+.cartao h3 {
+  padding-right: 3rem;
+  color: var(--latao2);
+  font-size: 1.05rem;
+}
+
+.cartao p + p {
+  color: var(--perg2);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.selo {
+  position: absolute;
+  top: -0.7rem;
+  right: 0.8rem;
+  display: grid;
+  place-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: radial-gradient(circle at 35% 30%, #b84545, #8e2a2a 60%, #5e1818);
+  border-radius: 50% 46% 52% 48%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6), inset 0 0 0 3px rgba(0, 0, 0, 0.18);
+  color: var(--perg);
+  font: 700 1.25rem/1 var(--t);
+}
+
+.cartao .acoes {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(197, 160, 89, 0.3);
+}
+
+.cartao .acoes button {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.cartao .acoes button:last-child {
+  border-color: #8a4b40;
+  color: var(--vinho);
+}
+
+.cartao .acoes button:last-child:hover {
+  background: rgba(232, 160, 144, 0.12);
+  box-shadow: 0 0 14px rgba(232, 120, 96, 0.25);
+}
+
+.estado {
+  color: var(--perg2);
+  font-style: italic;
+}
+
+.erro,
+[role='alert'] {
+  margin: 0.8rem 0;
+  padding: 0.5rem 0.75rem;
+  background: rgba(120, 40, 30, 0.25);
+  border-left: 3px solid var(--vinho);
+  border-radius: 0 4px 4px 0;
+  color: var(--vinho);
+  font-weight: 600;
+}
+
+@media (min-width: 52rem) {
+  .catalogo {
+    grid-template-columns: 22rem 1fr;
+  }
+
+  .painel {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .moldura {
+    order: -1;
+    width: min(100%, 16rem);
+    border-radius: 8rem 8rem 4px 4px;
+  }
+
+  .topo {
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+  }
+
+  .abas {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
