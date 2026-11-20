@@ -59,3 +59,77 @@ h3 {
     transition: none !important;
   }
 }
+
+header {
+  padding: 1.5rem max(1rem, calc((100% - 70rem) / 2));
+  background-color: var(--musgo);
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(232, 220, 196, 0.03) 0 1px,
+    transparent 1px 4px
+  );
+  border-bottom: 5px double var(--latao);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+header h1 {
+  color: var(--latao-claro);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  text-shadow: 0 0 14px rgba(255, 170, 60, 0.35);
+}
+
+header h1::before,
+header h1::after {
+  content: '❦';
+  content: '❦' / '';
+  margin: 0 0.75rem;
+  color: var(--latao);
+  font-size: 0.7em;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: start;
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 1.75rem 1rem 3rem;
+}
+
+section {
+  min-width: 0;
+}
+
+section > h2 {
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.4rem;
+  color: var(--latao);
+  font-size: 1.3rem;
+  border-bottom: 4px double rgba(197, 160, 89, 0.45);
+}
+
+main > section:first-child {
+  padding: 1.4rem;
+  background-color: var(--madeira);
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(232, 220, 196, 0.03) 0 1px,
+    transparent 1px 4px
+  );
+  border: 4px double var(--latao);
+  border-radius: 6px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), inset 0 0 40px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 52rem) {
+  main {
+    grid-template-columns: 22rem 1fr;
+  }
+
+  main > section:first-child {
+    position: sticky;
+    top: 1rem;
+  }
+}
