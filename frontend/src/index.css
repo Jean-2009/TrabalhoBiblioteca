@@ -201,3 +201,201 @@ input:focus-visible {
 .campo {
   margin-bottom: 1rem;
 }
+
+.aba {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3.5rem;
+}
+
+.titulo {
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
+  color: var(--latao);
+  font-size: 1.6rem;
+  border-bottom: 4px double rgba(197, 160, 89, 0.45);
+}
+
+.lead {
+  max-width: 62ch;
+  margin-bottom: 1.5rem;
+  color: var(--perg2);
+  font-style: italic;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 1rem 0 2.8rem;
+}
+
+.hero h1 {
+  margin-bottom: 1rem;
+  color: var(--latao2);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  text-shadow: 0 0 16px rgba(255, 170, 60, 0.3);
+}
+
+.hero p {
+  max-width: 46ch;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.moldura {
+  justify-self: center;
+  width: min(100%, 22rem);
+  overflow: hidden;
+  background: var(--fundo);
+  border-radius: 11rem 11rem 4px 4px;
+  box-shadow: 0 0 0 3px var(--latao), 0 0 0 7px var(--mogno), 0 0 0 9px var(--latao),
+    0 18px 40px rgba(0, 0, 0, 0.6), var(--vela);
+}
+
+.moldura svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chama {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: vela 2.6s ease-in-out infinite;
+}
+
+.halo {
+  animation: brilho 2.6s ease-in-out infinite;
+}
+
+@keyframes vela {
+  50% {
+    transform: scale(0.9, 1.1) rotate(2deg);
+  }
+}
+
+@keyframes brilho {
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.tres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem;
+}
+
+.duas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.25rem;
+}
+
+.papel {
+  padding: 1.4rem;
+  background: var(--papel), linear-gradient(160deg, #efe4cd, #e0d0b0);
+  border: 1px solid #b79a62;
+  border-radius: 3px;
+  box-shadow: inset 0 0 40px rgba(120, 80, 30, 0.25), 0 8px 20px rgba(0, 0, 0, 0.5);
+  color: var(--tinta);
+}
+
+.papel h3 {
+  margin-bottom: 0.4rem;
+  color: #4a2b17;
+  font-size: 1.1rem;
+}
+
+.papel ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.papel button {
+  margin-top: 0.9rem;
+  border-color: #7a5a2c;
+  color: #4a2b17;
+}
+
+.papel button:hover {
+  background: rgba(74, 43, 23, 0.1);
+  box-shadow: none;
+}
+
+.ico {
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-bottom: 0.5rem;
+  fill: none;
+  stroke: #7a5a2c;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.passos {
+  counter-reset: p;
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passos li {
+  counter-increment: p;
+  position: relative;
+  padding: 0.3rem 0 0.3rem 3.4rem;
+}
+
+.passos li::before {
+  content: counter(p);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--musgo);
+  border: 2px double var(--latao);
+  border-radius: 50%;
+  color: var(--latao2);
+  font: 700 1rem var(--t);
+}
+
+.nota {
+  margin-top: 1.5rem;
+  padding: 1rem 1.2rem;
+  background: var(--musgo);
+  border: 4px double var(--latao);
+  border-radius: 6px;
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+  padding: 1.6rem 1rem;
+  background: var(--musgo);
+  border-top: 5px double var(--latao);
+  color: var(--perg2);
+  font-size: 0.95rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.rodape .coruja {
+  width: 3.2rem;
+  height: 3.2rem;
+}
