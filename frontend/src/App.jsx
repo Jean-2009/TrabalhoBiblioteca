@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { apiGet, apiPost, apiPut, apiDelete, extrairLista } from './api'
 import FormularioLivro from './components/FormularioLivro'
 import ListaLivros from './components/ListaLivros'
+import BuscaLivros from './components/BuscaLivros'
+import { filtrarLivros } from './utils/filtrarLivros'
 
 function App() {
   const [livros, setLivros] = useState([])
@@ -9,6 +11,7 @@ function App() {
   const [erro, setErro] = useState(null)
   const [editando, setEditando] = useState(null)
   const [erroAcao, setErroAcao] = useState(null)
+  const [busca, setBusca] = useState('')
 
   useEffect(() => {
     const controle = new AbortController()
@@ -65,6 +68,8 @@ function App() {
     setEditando(livro)
   }
 
+  const livrosFiltrados = filtrarLivros(livros, busca)
+
   return (
     <>
       <header>
@@ -87,19 +92,17 @@ function App() {
           <h2>Livros</h2>
           {erroAcao && <p role="alert" className="erro">{erroAcao}</p>}
           {!carregando && !erro && livros.length > 0 && (
+            <BuscaLivros valor={busca} onChange={setBusca} />
+          )}
+          {!carregando && !erro && livros.length > 0 && livrosFiltrados.length === 0 && (
+            <p>Nenhum livro encontrado para a busca.</p>
+          )}
+          {!carregando && !erro && livrosFiltrados.length > 0 && (
             <ListaLivros
-              livros={livros}
+              livros={livrosFiltrados}
               onEditar={iniciarEdicao}
               onExcluir={excluir}
             />
-          )}
-          {carregando && <p>Carregando livros...</p>}
-          {!carregando && erro && <p role="alert">Erro: {erro}</p>}
-          {!carregando && !erro && livros.length === 0 && (
-            <p>Nenhum livro cadastrado ainda.</p>
-          )}
-          {!carregando && !erro && livros.length > 0 && (
-            <ListaLivros livros={livros} />
           )}
         </section>
       </main>
